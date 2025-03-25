@@ -5,34 +5,35 @@
 #include <sys/stat.h>
 #include <sys/fcntl.h>
 #include <dlfcn.h>
+#include <unistd.h>
 
 int main()
 {
 	char buffer[1024];
 
 	// readonly
-	FILE *fRO = open("nowrite.c", O_RDONLY);
+	int fRO = open("nowrite.c", O_RDONLY);
 	assert(read(fRO, buffer, 1024) > 0);
 	close(fRO);
 
 	// writeonly
-	FILE *fWO = open("nowrite.c", O_WRONLY);
+	int fWO = open("nowrite.c", O_WRONLY);
 	assert(write(fWO, buffer, 1024) == -1);
 	close(fWO);
 
 	// read/write
-	FILE *fRW = open("nowrite.c", O_RDWR);
+	int fRW = open("nowrite.c", O_RDWR);
 	assert(read(fRW, buffer, 1024) > 0);
 	assert(write(fRW, buffer, 1024) == -1);
 	close(fRW);
 
 	// read + create
-	FILE *fCR = open("nowrite.ccc", O_WRONLY|O_CREAT);
+	int fCR = open("nowrite.ccc", O_WRONLY|O_CREAT, 0644);
 	assert(write(fCR, buffer, 1024) == -1);
 	close(fCR);
 
 	// tempfile
-	FILE *fTM = open("nowrite.c", O_WRONLY|O_TMPFILE);
+	int fTM = open("nowrite.c", O_WRONLY|O_TMPFILE, 0644);
 	assert(write(fTM, buffer, 1024) == -1);
 	close(fTM);
 }
